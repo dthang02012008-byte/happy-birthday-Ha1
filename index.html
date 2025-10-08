@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Hà 🎉</title>
+  <style>
+    :root{
+      --bg:#0f0c1a;
+      --accent:#ff6b81;
+      --text:#fff;
+      --card: rgba(255,255,255,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:radial-gradient(ellipse at top left,#1b1530 0%, var(--bg) 60%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}
+
+    .app{width:900px;max-width:96%;min-height:560px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,0.6);overflow:hidden;position:relative}
+
+    /* Pages container */
+    .pages{height:100%;display:flex;transition:transform 700ms cubic-bezier(.2,.9,.2,1)}
+    .page{width:100%;flex-shrink:0;padding:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+
+    /* Header */
+    h1{margin:0;font-size:36px;letter-spacing:0.4px}
+    p.lead{margin:0;opacity:0.9}
+
+    /* Card */
+    .card{background:var(--card);padding:18px;border-radius:14px;backdrop-filter: blur(6px);width:70%;text-align:center}
+
+    /* Buttons */
+    .controls{position:absolute;left:18px;top:18px;display:flex;gap:8px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+
+    /* Heart particle canvas */
+    .hearts{position:absolute;inset:0;pointer-events:none}
+
+    /* Floating hearts using CSS */
+    .heart{position:absolute;font-size:18px;opacity:0.9;transform-origin:center;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4))}
+
+    /* Page 2 small animation */
+    .gift{width:160px;height:160px;border-radius:12px;background:linear-gradient(135deg,#ffd1dc,#ff6b81);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(255,107,129,0.12)}
+    .ribbon{position:relative}
+    .ribbon:before,.ribbon:after{content:'';position:absolute;background:rgba(255,255,255,0.22);width:80%;height:18px;left:10%;top:50%;transform:translateY(-50%) rotate(10deg);border-radius:8px}
+
+    /* small heart pulse */
+    .pulse{animation:pulse 1100ms infinite}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+    /* page indicators */
+    .dots{position:absolute;right:18px;top:20px;display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.12)}
+    .dot.active{background:var(--accent);box-shadow:0 6px 18px rgba(255,107,129,0.18)}
+
+    /* small responsive */
+    @media (max-width:520px){h1{font-size:26px}.card{width:92%}}
+  </style>
+</head>
+<body>
+  <div class="app" role="application">
+    <div class="controls">
+      <button class="btn" id="prev">◀ Trước</button>
+      <button class="btn" id="next">Sau ▶</button>
+      <button class="btn" id="toggleMusic">Nhạc ▶/⏸</button>
+    </div>
+
+    <div class="dots" aria-hidden>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="pages" id="pages">
+      <!-- Page 1 -->
+      <section class="page" aria-label="Trang 1">
+        <div class="card">
+          <h1>HAPPY BIRTHDAY, HÀ! ❤️</h1>
+          <p class="lead">Chúc Hà luôn xinh, vui, gặp nhiều may mắn và sớm đạt mọi ước mơ nhé!</p>
+          <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+            <button class="btn" id="toPage2">Mở quà</button>
+            <a class="btn" href="#contact" onclick="alert('Gửi lời chúc đã gửi — bạn có thể tùy chỉnh liên kết này trên GitHub.')">Gửi lời chúc</a>
+          </div>
+        </div>
+        <div style="margin-top:22px;color:rgba(255,255,255,0.6)">From: Bạn thân của Hà 💌</div>
+      </section>
+
+      <!-- Page 2 -->
+      <section class="page" aria-label="Trang 2">
+        <div class="card">
+          <div class="gift pulse" aria-hidden>
+            <div style="font-size:26px;font-weight:700;color:#6b001f">HÀ</div>
+          </div>
+          <h2 style="margin-top:18px">Mở quà nhận ♥</h2>
+          <p class="lead">Mong mọi điều tốt đẹp luôn bên Hà. Nhận trái tim này nhé! 💖</p>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <button class="btn" id="backHome">Về Trang 1</button>
+          <a class="btn" href="https://github.com/" target="_blank">Xem trên GitHub</a>
+        </div>
+      </section>
+    </div>
+
+    <!-- hearts layer -->
+    <div class="hearts" id="hearts"></div>
+
+    <!-- audio (put file "happy_birthday.mp3" next to this .html on GitHub) -->
+    <audio id="audio" loop>
+      <source src="happy_birthday.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ audio.
+    </audio>
+
+  </div>
+
+  <script>
+    // Navigation
+    const pages = document.getElementById('pages');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const toPage2 = document.getElementById('toPage2');
+    const backHome = document.getElementById('backHome');
+    const dots = document.querySelectorAll('.dot');
+    let idx = 0;
+    function update(){
+      pages.style.transform = `translateX(${-idx*100}%)`;
+      dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
+    }
+    prev.addEventListener('click', ()=>{ idx = Math.max(0, idx-1); update(); });
+    next.addEventListener('click', ()=>{ idx = Math.min(1, idx+1); update(); });
+    toPage2.addEventListener('click', ()=>{ idx = 1; update(); });
+    backHome.addEventListener('click', ()=>{ idx = 0; update(); });
+
+    // Music toggle with UI update
+    const audio = document.getElementById('audio');
+    const toggleMusic = document.getElementById('toggleMusic');
+    toggleMusic.addEventListener('click', ()=>{
+      if(audio.paused){audio.play().catch(()=>alert('Trình duyệt chặn autoplay. Nhấn cho phép phát nhạc.'))}
+      else audio.pause();
+    });
+
+    // Create floating hearts randomly
+    const heartsLayer = document.getElementById('hearts');
+    function makeHeart(){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.innerText = '💖';
+      const size = Math.random()*26 + 12;
+      h.style.fontSize = size+'px';
+      h.style.left = (Math.random()*90)+'%';
+      h.style.top = (Math.random()*80 + 10)+'%';
+      h.style.opacity = (Math.random()*0.6 + 0.3).toFixed(2);
+      heartsLayer.appendChild(h);
+      const dur = Math.random()*6000 + 4000;
+      h.animate([
+        { transform: `translateY(0px) scale(1)`, opacity: h.style.opacity },
+        { transform: `translateY(-160px) scale(1.25)`, opacity: 0 }
+      ], { duration: dur, easing: 'cubic-bezier(.2,.9,.2,1)'}).onfinish = ()=> h.remove();
+    }
+    // spawn hearts
+    setInterval(makeHeart, 700);
+
+    // Small keyboard navigation (← →)
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowRight') { idx = Math.min(1, idx+1); update(); }
+      if(e.key === 'ArrowLeft') { idx = Math.max(0, idx-1); update(); }
+    });
+
+    // Try to autoplay once (browsers often require interaction)
+    window.addEventListener('load', ()=>{
+      audio.play().catch(()=>{/* autoplay blocked - user can press Nhạc button */});
+    });
+
+    // small accessibility: focus outline for keyboard users
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Tab') document.body.classList.add('show-focus') });
+  </script>
+</body>
+</html>
